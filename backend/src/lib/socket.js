@@ -22,14 +22,14 @@ io.on("connection", (socket) => {
   console.log("A user connected", socket.id);
 
   const userId = socket.handshake.query.userId;
-  if (userId) userSocketMap[userId] = socket.id;
+  if (userId) userSocketMap[userId] = socket.id; // Ensure this is correctly mapping userId to socketId
 
-  // io.emit() is used to send events to all the connected clients
+  // Emit online users
   io.emit("getOnlineUsers", Object.keys(userSocketMap));
 
   socket.on("disconnect", () => {
     console.log("A user disconnected", socket.id);
-    delete userSocketMap[userId];
+    delete userSocketMap[userId]; // Ensure this is correctly removing the userId
     io.emit("getOnlineUsers", Object.keys(userSocketMap));
   });
 });
