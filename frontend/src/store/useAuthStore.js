@@ -16,8 +16,12 @@ export const useAuthStore = create((set, get) => ({
 
   checkAuth: async () => {
     try {
-      const res = await axiosInstance.get("/auth/check");
-
+      const token = document.cookie.split('; ').find(row => row.startsWith('jwt=')).split('=')[1]; // Get token from cookies
+      const res = await axiosInstance.get("/auth/check", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
       set({ authUser: res.data });
       get().connectSocket();
     } catch (error) {
@@ -25,8 +29,8 @@ export const useAuthStore = create((set, get) => ({
       set({ authUser: null });
     } finally {
       set({ isCheckingAuth: false });
-    }
-  },
+  }
+},
 
   signup: async (data) => {
     set({ isSigningUp: true });

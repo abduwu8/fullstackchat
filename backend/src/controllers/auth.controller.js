@@ -3,6 +3,7 @@ import User from "../models/user.models.js";
 import bcrypt from "bcryptjs";
 import cloudinary from "../lib/cloudinary.js";
 
+
 export const signup = async (req, res) => {
   const { fullName, email, password } = req.body;
   try {
@@ -21,28 +22,25 @@ export const signup = async (req, res) => {
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
 
-    const newUser = new User({
+    const newUser  = new User({
       fullName,
       email,
       password: hashedPassword,
     });
 
-    if (newUser) {
-      // generate jwt token here
-      generateToken(newUser._id, res);
-      await newUser.save();
+    await newUser .save(); // Save the user before generating the token
 
-      res.status(201).json({
-        _id: newUser._id,
-        fullName: newUser.fullName,
-        email: newUser.email,
-        profilePic: newUser.profilePic,
-      });
-    } else {
-      res.status(400).json({ message: "Invalid user data" });
-    }
+    // Generate JWT token here
+    generateToken(newUser ._id, res);
+
+    res.status(201).json({
+      _id: newUser ._id,
+      fullName: newUser .fullName,
+      email: newUser .email,
+      profilePic: newUser .profilePic,
+    });
   } catch (error) {
-    console.log("Error in signup controller", error.message);
+    console.error("Error in signup controller:", error.message); // Log the error for debugging
     res.status(500).json({ message: "Internal Server Error" });
   }
 };
@@ -61,6 +59,7 @@ export const login = async (req, res) => {
       return res.status(400).json({ message: "Invalid credentials" });
     }
 
+    // Generate JWT token here
     generateToken(user._id, res);
 
     res.status(200).json({
@@ -70,7 +69,7 @@ export const login = async (req, res) => {
       profilePic: user.profilePic,
     });
   } catch (error) {
-    console.log("Error in login controller", error.message);
+    console.error("Error in login controller:", error.message); // Log the error for debugging
     res.status(500).json({ message: "Internal Server Error" });
   }
 };
