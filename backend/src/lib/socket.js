@@ -1,14 +1,10 @@
 import { Server } from "socket.io";
 import http from "http";
-import { authUser } from "./utils.js";
+
 import express from "express";
 
 const app = express();
 const server = http.createServer(app);
-
-const socket = io("http://localhost:PORT", {
-  query: { userId: authUser ._id },
-});
 
 const io = new Server(server, {
   cors: {
