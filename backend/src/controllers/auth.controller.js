@@ -28,14 +28,13 @@ export const signup = async (req, res) => {
     });
 
     if (newUser) {
-      generateToken(newUser._id, res);
-      await newUser.save();
-
+      await newUser.save(); // Save the user first
+      generateToken(newUser._id, res); // Then generate the token
       res.status(201).json({
-        _id: newUser._id,
-        fullName: newUser.fullName,
-        email: newUser.email,
-        profilePic: newUser.profilePic,
+          _id: newUser._id,
+          fullName: newUser.fullName,
+          email: newUser.email,
+          profilePic: newUser.profilePic,
       });
     } else {
       res.status(400).json({ message: "Invalid user data" });
@@ -51,23 +50,18 @@ export const login = async (req, res) => {
   try {
     const user = await User.findOne({ email });
 
-    if (!user) {
-      return res.status(400).json({ message: "Invalid credentials" });
+    if (newUser) {
+      await newUser.save(); // Save the user first
+      generateToken(newUser._id, res); // Then generate the token
+      res.status(201).json({
+          _id: newUser._id,
+          fullName: newUser.fullName,
+          email: newUser.email,
+          profilePic: newUser.profilePic,
+      });
+    } else {
+      res.status(400).json({ message: "Invalid user data" });
     }
-
-    const isPasswordCorrect = await bcrypt.compare(password, user.password);
-    if (!isPasswordCorrect) {
-      return res.status(400).json({ message: "Invalid credentials" });
-    }
-
-    generateToken(user._id, res);
-
-    res.status(200).json({
-      _id: user._id,
-      fullName: user.fullName,
-      email: user.email,
-      profilePic: user.profilePic,
-    });
   } catch (error) {
     console.log("Error in login controller", error.message);
     res.status(500).json({ message: "Internal Server Error" });
